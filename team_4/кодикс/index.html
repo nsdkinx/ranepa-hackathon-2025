@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лаборатория логических игр СПО РАНХиГС</title>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="header-text">
+                    <h1>Лаборатория логических игр СПО РАНХиГС</h1>
+                    <p>Развиваем логическое мышление через игры</p>
+                </div>
+            </div>
+            <div id="user-auth-container" class="auth-container">
+                <!-- Здесь будет отображаться информация о пользователе или кнопка регистрации -->
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section>
+            <h2>О нас</h2>
+            <p>Лаборатория логических игр СПО РАНХиГС - это пространство для развития логического мышления, стратегического планирования и творческого подхода к решению задач. Мы проводим регулярные мероприятия, турниры и мастер-классы для студентов и всех желающих.</p>
+        </section>
+
+        <section>
+            <h2>Анонсы мероприятий</h2>
+            <div class="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item">
+                        <h3>Турнир по шахматам</h3>
+                        <p>Приглашаем всех на турнир по шахматам</p>
+                    </div>
+                    <div class="carousel-item">
+                        <h3>Мастер-класс по логическим играм</h3>
+                        <p>Изучаем новые стратегии и тактики</p>
+                    </div>
+                    <div class="carousel-item">
+                        <h3>Открытый чемпионат по ГО</h3>
+                        <p>Соревнования для всех уровней подготовки</p>
+                    </div>
+                </div>
+                <button class="carousel-control prev">&#10094;</button>
+                <button class="carousel-control next">&#10095;</button>
+            </div>
+        </section>
+
+        <section>
+            <h2>Последние новости</h2>
+            <div class="news-container">
+                <div class="news-item">
+                    <div class="news-content">
+                        <h3>Победа в городском турнире</h3>
+                        <p class="news-date">04.04.2025</p>
+                        <p>Наша команда заняла первое место в городском турнире по логическим играм.</p>
+                        <a href="#" class="btn">Подробнее</a>
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-content">
+                        <h3>Новые поступления игр</h3>
+                        <p class="news-date">04.04.2025</p>
+                        <p>В нашу лабораторию поступили новые настольные логические игры.</p>
+                        <a href="#" class="btn">Подробнее</a>
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-content">
+                        <h3>Мастер-класс от чемпиона</h3>
+                        <p class="news-date">04.04.2025</p>
+                        <p>Прошел мастер-класс от чемпиона России по шахматам.</p>
+                        <a href="#" class="btn">Подробнее</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>Контакты</h2>
+            <div class="contact-form">
+                <form>
+                    <div class="form-group">
+                        <label for="name">Имя</label>
+                        <input type="text" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Сообщение</label>
+                        <textarea id="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Отправить</button>
+                </form>
+            </div>
+            
+            <div class="contact-info">
+                <p><strong>Адрес:</strong> г. Хабаровск, ул. Муравьева-Амурского, 33</p>
+                <p><strong>Телефон:</strong> +8 (421) 230-65-49</p>
+                <p><strong>Email:</strong> pkranepa@ranepa.ru</p>
+            </div>
+            
+            <div class="social-links">
+                <h3>Мы в социальных сетях</h3>
+                <a href="https://vk.com/ranepa">ВКонтакте</a>
+                <a href="https://t.me/s/mainranepa">Telegram</a>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Лаборатория логических игр СПО РАНХиГС.</p>
+        </div>
+    </footer>
+
+    <script src="database.js"></script>
+    <script src="index.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const isAdmin = localStorage.getItem('isAdmin') === 'true';
+            const authContainer = document.getElementById('user-auth-container');
+
+            if (isAdmin) {
+                authContainer.innerHTML = `
+                    <div class="user-info">
+                        <span>Администратор</span>
+                        <a href="#" class="logout-btn">Выйти</a>
+                    </div>
+                `;
+            } else if (currentUser) {
+                authContainer.innerHTML = `
+                    <div class="user-info">
+                        <span>${currentUser.name}</span>
+                        <a href="#" class="logout-btn">Выйти</a>
+                    </div>
+                `;
+            } else {
+                authContainer.innerHTML = `
+                    <a href="registration.html" class="register-btn">Регистрация</a>
+                `;
+            }
+
+            // Добавляем обработчик для кнопки выхода
+            const logoutBtn = document.querySelector('.logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('currentUser');
+                    localStorage.removeItem('isAdmin');
+                    window.location.reload();
+                });
+            }
+        });
+    </script>
+</body>
+</html>

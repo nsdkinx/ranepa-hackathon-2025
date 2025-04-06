@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - Лаборатория логических игр СПО РАНХиГС</title>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .hidden {
+            display: none;
+        }
+        .success-message {
+            color: rgb(0, 0, 0);
+            font-size: 16px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        .user-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+        .user-info span {
+            color: #333;
+            font-weight: bold;
+        }
+        .logout-btn {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+        }
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Регистрация</h1>
+            <p>Присоединяйтесь к нашему сообществу</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="registration-form">
+            <h2>Регистрация пользователя</h2>
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label for="reg-name">Имя</label>
+                    <input type="text" id="reg-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-email">Email</label>
+                    <input type="email" id="reg-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-password">Пароль</label>
+                    <input type="password" id="reg-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="reg-confirm-password">Подтвердите пароль</label>
+                    <input type="password" id="reg-confirm-password" required>
+                </div>
+                <button type="submit" class="btn">Зарегистрироваться</button>
+            </form>
+            <div id="registration-message" class="message"></div>
+        </div>
+
+        <div class="admin-login">
+            <h2>Вход для администратора</h2>
+            <form id="adminForm">
+                <div class="form-group">
+                    <label for="admin-username">Логин</label>
+                    <input type="text" id="admin-username" required placeholder="Введите логин">
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Пароль</label>
+                    <input type="password" id="admin-password" required placeholder="Введите пароль">
+                </div>
+                <button type="submit" class="btn">Войти</button>
+            </form>
+            <div id="admin-message" class="message"></div>
+        </div>
+
+        <div class="back-to-main">
+            <a href="index.html" class="btn">Вернуться на главную</a>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Лаборатория логических игр СПО РАНХиГС.</p>
+        </div>
+    </footer>
+
+    <script src="database.js"></script>
+    <script src="index.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Инициализация базы данных
+            Database.init();
+            
+            const registrationForm = document.getElementById('registrationForm');
+            const passwordInput = document.getElementById('reg-password');
+            const confirmPasswordInput = document.getElementById('reg-confirm-password');
+            const registrationMessage = document.getElementById('registration-message');
+            
+            // Проверка совпадения паролей при вводе
+            confirmPasswordInput.addEventListener('input', function() {
+                if (passwordInput.value && confirmPasswordInput.value && 
+                    passwordInput.value !== confirmPasswordInput.value) {
+                    registrationMessage.textContent = 'Пароли не совпадают';
+                    registrationMessage.style.color = 'red';
+                } else {
+                    registrationMessage.textContent = '';
+                }
+            });
+            
+            // Проверка при отправке формы
+            registrationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                if (passwordInput.value && confirmPasswordInput.value && 
+                    passwordInput.value !== confirmPasswordInput.value) {
+                    registrationMessage.textContent = 'Пароли не совпадают';
+                    registrationMessage.style.color = 'red';
+                    return false;
+                }
+                
+                // Получаем данные пользователя
+                const name = document.getElementById('reg-name').value;
+                const email = document.getElementById('reg-email').value;
+                const password = passwordInput.value;
+                
+                // Проверяем, существует ли пользователь с таким email
+                if (Database.getUser(email)) {
+                    registrationMessage.textContent = 'Пользователь с таким email уже зарегистрирован';
+                    registrationMessage.style.color = 'red';
+                    return false;
+                }
+                
+                // Создаем нового пользователя
+                const newUser = {
+                    name: name,
+                    email: email,
+                    password: password
+                };
+                
+                // Добавляем пользователя в базу данных
+                Database.addUser(newUser);
+                
+                // Сохраняем текущего пользователя в localStorage
+                localStorage.setItem('currentUser', JSON.stringify(newUser));
+                
+                // Показываем сообщение об успешной регистрации
+                registrationMessage.textContent = 'Регистрация прошла успешно! Перенаправление на главную страницу...';
+                registrationMessage.className = 'success-message';
+                registrationMessage.style.color = 'rgb(0, 128, 0)';
+                
+                // Перенаправляем на главную страницу через 2 секунды
+                setTimeout(function() {
+                    window.location.href = 'index.html';
+                }, 2000);
+            });
+            
+            // Обработка формы входа администратора
+            const adminForm = document.getElementById('adminForm');
+            const adminMessage = document.getElementById('admin-message');
+            
+            adminForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('admin-username').value;
+                const password = document.getElementById('admin-password').value;
+                
+                if (Database.verifyAdmin(username, password)) {
+                    localStorage.setItem('isAdmin', 'true');
+                    adminMessage.textContent = 'Вход выполнен успешно! Перенаправление на главную страницу...';
+                    adminMessage.style.color = 'green';
+                    
+                    setTimeout(function() {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    adminMessage.textContent = 'Неверный логин или пароль';
+                    adminMessage.style.color = 'red';
+                }
+            });
+
+            // Добавляем обработчик для кнопки выхода
+            const logoutBtn = document.querySelector('.logout-btn');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('currentUser');
+                    localStorage.removeItem('isAdmin');
+                    window.location.href = 'index.html';
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
